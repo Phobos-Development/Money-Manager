@@ -52,6 +52,16 @@ class IncomeCommands(commands.Cog):
                     else f"`🟢` **Total**: +${total}\n"
                 )
                 for tx in transactions:
+                    if len(embed.description) > 1800:
+                        embeds.append(embed)
+                        embed = discord.Embed(
+                            title=calendar.month_name[month], description=""
+                        )
+                        embed.description += (
+                            f"`🔴` **Total**: -${total * -1}\n"
+                            if total < 0
+                            else f"`🟢` **Total**: +${total}\n"
+                        )
                     embed.description += (
                         f"\n`🔴` -${tx[0] * -1}" if tx[0] < 0 else f"\n`🟢` +${tx[0]}"
                     ) + (f" | {tx[1]}" if tx[1] is not None else "")
@@ -87,28 +97,6 @@ class IncomeCommands(commands.Cog):
                 title="Channel Updated!",
                 description=f"I have set your income channel to: {channel.mention}!\n\n"
                 f"Now you may type `+100 [note]` or `-100 [note]` instead of `/add`",
-            )
-        )
-
-    @commands.command(aliases=["spent", "earned"])
-    async def total(self, ctx):
-        if ctx.invoked_with.lower() == "spent":
-            data = query_sql(
-                create_connection(),
-                "SELECT SUM(amount) FROM income WHERE amount < 0 AND discord_id=?",
-            )
-        elif ctx.invoked_with.lower() == "earned":
-            data = query_sql(
-                create_connection(), "SELECT SUM(amount) FROM income WHERE amount > 0"
-            )
-        else:
-            data = query_sql(create_connection(), "SELECT SUM(amount) FROM income")
-        amt = f"\n`🔴` -${data[0] * -1}" if data[0] < 0 else f"\n`🟢` +${data[0]}"
-        await ctx.send(
-            embed=discord.Embed(
-                description=f"**Total {ctx.invoked_with.title() if ctx.invoked_with.lower() != 'total' else ''}**: "
-                f"{amt}",
-                colour=0xFF0000 if data[0] < 0 else 0x00FF00,
             )
         )
 
@@ -167,6 +155,26 @@ class IncomeCommands(commands.Cog):
             embed=embeds[datetime.now().month - 1],
             view=Paginator(embeds, datetime.now().month - 1),
         )
+
+    @app_commands.command(name="help")
+    @app_commands.guilds(discord.Object(id=853295571448233985))
+    async def help(self, interaction: discord.Interaction):
+        embed = discord.Embed(
+            title="Income Manager Guide",
+            description="This bot will allow you to store all your income and expenses.\n"
+            "To get started, run `/add <amount> [note]`. If you don't like the idea of using slash "
+            "commands, run `/channel <#channel>`.\n"
+            "This will allow you to type `+<amount> [note]` or `-<amount> [note]` in the specified "
+            "channel and have the bot track it for you.\n\n"
+            "**Examples**:\n"
+            "`/add -200 Bought clothes`\n"
+            "`/channel #general`\n"
+            "`+100 Completed a commission`\n"
+            "`-30`\n"
+            "`/monthly`\n"
+            "`/total income`",
+        )
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):
