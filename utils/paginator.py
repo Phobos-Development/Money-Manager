@@ -4,13 +4,19 @@ import discord.ui
 
 
 class Paginator(discord.ui.View):
-    def __init__(self, embeds: List[discord.Embed]):
+    def __init__(self, embeds: List[discord.Embed], start_page):
         super().__init__(timeout=60)
         self.embeds = embeds
-        self.current_page = 0
+        self.current_page = start_page
+        if self.current_page == 0:
+            self.previous_page.disabled = True
+        if self.current_page == len(embeds):
+            self.next_page.disabled = True
 
-    @discord.ui.button(label="←", style=discord.ButtonStyle.blurple, disabled=True)
-    async def previous_page(self, button: discord.ui.Button, interaction: discord.Interaction):
+    @discord.ui.button(label="←", style=discord.ButtonStyle.blurple, disabled=False)
+    async def previous_page(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
         if self.current_page == 1:
             self.previous_page.disabled = True
         self.next_page.disabled = False
@@ -20,7 +26,9 @@ class Paginator(discord.ui.View):
         await interaction.response.edit_message(embed=embed, view=self)
 
     @discord.ui.button(label="→", style=discord.ButtonStyle.blurple, disabled=False)
-    async def next_page(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def next_page(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
         self.current_page += 1
         print(self.current_page)
         if self.current_page == len(self.embeds) - 1:
