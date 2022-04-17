@@ -10,7 +10,7 @@ class Paginator(discord.ui.View):
         self.current_page = start_page
         if self.current_page == 0:
             self.previous_page.disabled = True
-        if self.current_page == len(embeds):
+        if self.current_page == len(embeds) - 1:
             self.next_page.disabled = True
 
     @discord.ui.button(label="←", style=discord.ButtonStyle.blurple, disabled=False)
