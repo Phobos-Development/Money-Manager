@@ -1,14 +1,14 @@
+import logging
 import sqlite3
-
 from sqlite3 import Error
 
 
 def create_connection():
     conn = None
     try:
-        conn = sqlite3.connect('income_manager.db')
+        conn = sqlite3.connect("income_manager.db")
     except Error as e:
-        print(f"[SQLite] Error Occurred {e}")
+        logging.error(f"[SQLite] Error Occurred {e}")
     return conn
 
 
@@ -22,7 +22,7 @@ def execute_sql(conn, sql_data, args=None):
         conn.commit()
         conn.close()
     except Error as e:
-        print(f"[SQLite] Error Occurred {e}")
+        logging.error(f"[SQLite] Error Occurred {e}")
 
 
 def query_sql(conn, sql_data, args=None, one=True):
@@ -34,7 +34,7 @@ def query_sql(conn, sql_data, args=None, one=True):
         else:
             c.execute(sql_data, args)
     except Error as e:
-        print(e)
+        logging.error(f"[SQLite] Error Occurred {e}")
     finally:
         if one:
             data = c.fetchone()
@@ -62,8 +62,8 @@ def setup():
             discord_id INT PRIMARY KEY,
             channel_id INT DEFAULT NULL
         )
-        """
+        """,
     )
     for cmd in commands:
         execute_sql(create_connection(), cmd)
-    print("DB Ready")
+    logging.info("Database Ready")
