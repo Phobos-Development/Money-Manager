@@ -3,13 +3,13 @@ import logging.handlers
 import os
 import sys
 
-
-import config
-
 import discord
 from discord.ext import commands
 
-from utils.database_handler import setup, query_sql, create_connection
+import config
+from utils.database_handler import create_connection
+from utils.database_handler import query_sql
+from utils.database_handler import setup
 
 
 class IncomeBot(commands.AutoShardedBot):
@@ -22,13 +22,10 @@ class IncomeBot(commands.AutoShardedBot):
         self.logger = logging.getLogger("bot")
         self.ready = False
         self.channels = query_sql(
-            create_connection(),
-            f"SELECT channel_id FROM income_channels",
-            one=False
+            create_connection(), f"SELECT channel_id FROM income_channels", one=False
         )
         if self.channels is not None:
             self.channels = [channel[0] for channel in self.channels]
-        print(self.channels)
 
     @staticmethod
     def setup_logging() -> None:
@@ -43,10 +40,12 @@ class IncomeBot(commands.AutoShardedBot):
     async def load_cogs(self, directory="./cogs") -> None:
         for file in os.listdir(directory):
             if file.endswith(".py") and not file.startswith("_"):
-                await self.load_extension(f"{directory[2:].replace('/', '.')}.{file[:-3]}")
+                await self.load_extension(
+                    f"{directory[2:].replace('/', '.')}.{file[:-3]}"
+                )
                 self.logger.info(f"Loaded: {file[:-3]}")
             elif not (
-                    file in ["__pycache__"] or file.endswith(("pyc", "txt"))
+                file in ["__pycache__"] or file.endswith(("pyc", "txt"))
             ) and not file.startswith("_"):
                 await self.load_cogs(f"{directory}/{file}")
 
