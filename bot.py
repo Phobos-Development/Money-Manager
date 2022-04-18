@@ -74,8 +74,8 @@ class IncomeBot(commands.AutoShardedBot):
 
 
 if __name__ == "__main__":
+    setup()
     bot = IncomeBot()
     bot.setup_logging()
-    setup()
     bot.remove_command("help")
     bot.run(config.TOKEN)
