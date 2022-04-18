@@ -70,7 +70,6 @@ class IncomeCommands(commands.Cog):
         return embeds
 
     @app_commands.command(name="channel")
-    @app_commands.guilds(discord.Object(id=853295571448233985))
     async def set_channel(
         self, interaction: discord.Interaction, channel: discord.TextChannel
     ):
@@ -101,7 +100,6 @@ class IncomeCommands(commands.Cog):
         )
 
     @app_commands.command(name="total")
-    @app_commands.guilds(discord.Object(id=853295571448233985))
     async def view_income(
         self,
         interaction: discord.Interaction,
@@ -136,7 +134,6 @@ class IncomeCommands(commands.Cog):
             )
 
     @app_commands.command(name="monthly")
-    @app_commands.guilds(discord.Object(id=853295571448233985))
     async def view_monthly(self, interaction: discord.Interaction):
         data = query_sql(
             create_connection(),
@@ -157,7 +154,6 @@ class IncomeCommands(commands.Cog):
         )
 
     @app_commands.command(name="help")
-    @app_commands.guilds(discord.Object(id=853295571448233985))
     async def help(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title="Income Manager Guide",
