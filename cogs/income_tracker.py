@@ -13,10 +13,13 @@ class IncomeTracker(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def sync(self, ctx, guild_id=853295571448233985):
+    async def sync(self, ctx, guild_id=None):
         if ctx.author.id != 847438985612623882:
             return
-        await self.bot.tree.sync(guild=discord.Object(id=guild_id))
+        if guild_id is None:
+            await self.bot.tree.sync()
+        else:
+            await self.bot.tree.sync(guild=discord.Object(id=guild_id))
         await ctx.send("Done")
 
     @app_commands.command(name="add")
